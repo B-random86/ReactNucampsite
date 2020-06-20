@@ -1,5 +1,6 @@
 import * as ActionTypes from './ActionTypes';
 import { baseUrl } from '../shared/baseUrl';
+import { Errors } from 'react-redux-form';
 
  
 
@@ -12,6 +13,7 @@ export const fetchCampsites = () => dispatch => {
                  return response;
             } else {
                 const error = new Error(`Error ${response.status}: ${response.statusText}`);                error.response = response;
+                Errors.response= response;
                 throw error;
             }
         },
@@ -108,6 +110,38 @@ export const fetchCampsites = () => dispatch => {
                 alert('Your comment could not be posted\nError: ' + error.message);
             });
     };
+    
+    export const postFeedback = (feedback) => () => {
+        return fetch(baseUrl + 'feedback', {
+                method: "POST",
+                body: JSON.stringify(feedback),
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            })
+            .then(response => {
+                    if (response.ok) {
+                        alert(`Thank you for your feedback`);
+                        return response;
+                    } else {
+                        const error = new Error(`Error ${response.status}: ${response.statusText}`);
+                        error.response = response;
+                        throw error;
+                    }
+                },
+                error => { throw error; }
+            )
+            .then(response => response.json())
+            .then(response => {
+                console.log("Feedback : ", response);
+                alert("Thank you for your feedback!\n" + JSON.stringify(response));
+            })
+            .catch(error => {
+                console.log('Feedback', error.message);
+                alert('Your feedback could not be posted\nError: ' + error.message);
+            });
+    };
+    
     
     
     export const fetchPromotions = () => (dispatch) => {
